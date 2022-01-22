@@ -1,0 +1,138 @@
+@keyframes spoonFall {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes impact {
+    0% {
+        transform: scale(0);
+    }
+    90% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes treeGrow {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes textGrow {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    color: white;
+}
+
+#fakeSky {
+    background-color: #d0ddd7;
+}
+
+#ground,
+#logoGround,
+body {
+    fill: #2f2504;
+    background-color: #2f2504;
+}
+
+#logoGround {
+    transform: scale(0);
+}
+
+#logoSpoonHead,
+#logoSpoonHandle,
+#logoSpoonHandleTip,
+#logoSpoonSmooth {
+    fill: #e8f3b3; /*#e8f3b3;*/
+}
+
+#logoTree {
+    fill: #00d600;
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+}
+
+#skyEnclosure {
+    position: relative;
+    width: 100%;
+}
+#fakeSky {
+    position: absolute;
+    height: 65%;
+    width: 100%;
+    z-index: -2;
+    top: 0;
+}
+
+#logoText {
+    color: white;
+    fill: white;
+}
+svg text {
+    text-anchor: middle;
+}
+
+#logoSpoonSmooth,
+#logoSpoonHandle,
+#logoSpoon,
+#logoSpoonHead,
+#logoSpoonHandleTip {
+    animation-name: spoonFall;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.33333, 0, 0.66667, 0.33333);
+}
+
+#logoGround {
+    animation-name: impact;
+    animation-duration: 0.3s;
+    animation-delay: 0.8s;
+    animation-fill-mode: forwards;
+    transform-origin: 50px bottom;
+}
+
+#logoTree {
+    animation-name: treeGrow;
+    animation-duration: 3s;
+    animation-delay: 1.3s;
+    animation-timing-function: ease-out;
+    scale: 0s;
+    transform-origin: 50px 70px;
+    animation-fill-mode: forwards;
+    transform: scale(0);
+}
+
+#logoText {
+    animation-name: textGrow;
+    animation-duration: 3s;
+    animation-delay: 1.3s;
+    animation-timing-function: ease-out;
+    scale: 0s;
+    transform-origin: 50px 240px;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
