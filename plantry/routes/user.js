@@ -6,6 +6,7 @@ var Pair = require('../models/pair');
 var Pantry = require('../models/pantry');
 var Shoppinglist = require('../models/shoppinglist');
 var User = require('../models/user');
+var Recipe = require('../models/recipe');
 
 
 /* GET users listing. */
@@ -92,33 +93,14 @@ router.post('/register', async function(req, res, next) {
   // res.cookie(req.query.email, 'value', {maxAge: 36000s0});
 });
 
-/* GET list listing. */
-router.get('/list', async function(req, res, next) {
-  let email = req.cookies.user;
-
-  let user = await User.findOne({email: email});
-  let foods = await Food.find({});
-  var food;
-  if (user === null) {
-    food = [];
-  } else {
-    food = user.pantry.food;
-  }
-  if (foods === null) {
-    foods = [];
-  }
-
-  res.render('list', {list: food, foods:foods});
-});
-
 /* POST create food. */
 router.post('/pantry', async function(req, res, next) {
   let name = req.body.name;
   let quantity = req.body.quantity;
-
+  // console.log(name);
   let user = await User.findOne({email: "jordanhall123@googlemail.com"});
   let food = await Food.findOne({name: name});
-
+  // console.log(food);
   // let collection = await user.pantry.findOne({food: food});
   let found = false;
   console.log(user.pantry.food);
@@ -133,7 +115,7 @@ router.post('/pantry', async function(req, res, next) {
       break;
     } 
   }
-  if (!found) {
+  if (!found && food) {
     // console.log("creating food with " + food + " " );
     // Pair.create({food: food, quantity: quantity});
     user.pantry.food.push(new Pair({food: food, quantity: quantity}));
@@ -184,7 +166,7 @@ router.get('/pantry', async function(req, res, next) {
   } else {
     food = user.pantry.food;
   }
-  if (foods === null) {
+  if (foods == null) {
     foods = [];
   }
 
@@ -194,15 +176,62 @@ router.get('/pantry', async function(req, res, next) {
   res.render('pantry', {pantry: food, foods:foods});
 });
 
-/* POST create food. */
-router.post('/list', function(req, res, next) {
-  res.render();
+
+/* GET list listing. */
+router.get('/list', async function(req, res, next) {
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+
+  let foods = await Food.find({});
+  var food;
+  if (user == null) {
+    food = [];
+  } else {
+    food = user.shoppinglist.food;
+  }
+  if (foods == null) {
+    foods = [];
+  }
+
+  // console.log(food);
+  // console.log(foods);
+
+  res.render('list', {list: food, foods:foods});
 });
 
-/* PUT update food. */
-router.put('/list/food', function(req, res, next) {
-  res.render();
+/* POST create food. */
+router.post('/list', async function(req, res, next) {
+  let name = req.body.name;
+  let quantity = req.body.quantity;
+  // console.log(quantity);
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let food = await Food.findOne({name: name});
+  // console.log(food);
+  // let collection = await user.pantry.findOne({food: food});
+  let found = false;
+  // console.log(user.shoppinglist.food);
+  for (var pair of user.shoppinglist.food) {
+    // console.log("Pair " + pair);
+    if (pair.food.name == name) {
+      pair.quantity += parseInt(quantity);
+      pair.save(function () {});
+      user.shoppinglist.save(function () {});
+      user.save(function () {});
+      found = true;
+      break;
+    } 
+  }
+  if (!found && food) {
+    // console.log("creating food with " + food + " " );
+    // Pair.create({food: food, quantity: quantity});
+    user.shoppinglist.food.push(new Pair({food: food, quantity: parseInt(quantity)}));
+    // console.log(user.shoppinglist.food);
+    user.shoppinglist.save(function () {});
+    user.save(function () {});
+  }
+  
+  res.redirect('/user/list');
 });
+
 
 /* DELETE delete food. */
 router.post('/list/delete', async function(req, res, next) {
@@ -232,6 +261,43 @@ router.post('list/getrecipes', async function(req, res, next) {
   
 });
 
+/* GET pantry listing. */
+router.get('/recommendations', async function(req, res, next) {
+
+  // let email = req.cookies.user;
+
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let allRecipes = await Recipe.find({});
+
+  var food;
+  if (user == null) {
+    food = [];
+  } else {
+    // console.log(user.pantry.food)
+    food = user.pantry.food.map(item=>item.food.name);
+  }
+  console.log(allRecipes);
+  console.log(food);
+
+  // checks there are ingredients in the pantry
+
+  var recipes = [];
+  for (var recipe of allRecipes) {
+    for (var i of recipe.ingredients.map(it=>it.food.name)) {
+      if(food.includes(i)) {
+        recipes.push(recipe);
+        break;
+      }
+    }
+  }
+
+  // var recipes = allRecipes.filter(r=>r.ingredients.some(item => food.includes(item.food.name)));
+
+  console.log(recipes);
+  // console.log(foods);
+
+  res.render('recommendedrecipes', {recipes: recipes});
+});
 
 
 module.exports = router;

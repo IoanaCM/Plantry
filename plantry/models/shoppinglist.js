@@ -1,7 +1,7 @@
 var mongoose 	= require("mongoose");
 
 shoppinglistSchema = mongoose.Schema({
-	food: [(foodSchema, Number)]
+	food: [pairSchema]
 });
 
 module.exports = mongoose.model("Shoppinglist", shoppinglistSchema);
