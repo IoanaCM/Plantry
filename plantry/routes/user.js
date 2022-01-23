@@ -257,6 +257,30 @@ router.post('/list/delete', async function(req, res, next) {
   res.redirect('/user/list');
 });
 
+router.post('/list/addrecipe', async function(req, res, next) {
+  console.log(req.query);
+  let name = req.query.name;
+
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let recipe = await Recipe.findOne({name: name});
+
+  // let collection = await user.pantry.findOne({food: food});
+  let found = false;
+  console.log(user.shoppinglist);
+  for (var it of recipe.ingredients) {
+    // console.log(it);
+    if (!user.shoppinglist.food.map(i=>i.food.name).includes(it.food.name)&&!user.pantry.food.map(i=>i.food.name).includes(it.food.name)){
+      user.shoppinglist.food.push(it);
+    } 
+  }
+
+  user.shoppinglist.save(function () {});
+  user.save(function () {});
+  
+  res.redirect('/user/list');
+});
+
+
 router.post('list/getrecipes', async function(req, res, next) {
   
 });
