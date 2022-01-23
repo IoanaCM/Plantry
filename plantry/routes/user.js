@@ -243,11 +243,12 @@ router.post('/list/delete', async function(req, res, next) {
 
   // let collection = await user.pantry.findOne({food: food});
   let found = false;
-  console.log(user.shoppinglist);
-  for (var pair in user.shoppinglist) {
+  console.log(user.shoppinglist.food);
+  for (var pair in user.shoppinglist.food) {
     console.log("Pair " + pair);
-    if (pair[0].name == name) {
-      user.shoppinglist.splice(pair, 1);
+    if (user.shoppinglist.food[pair].food.name == name) {
+      
+      user.shoppinglist.food.splice(pair, 1);
       user.shoppinglist.save(function () {});
       user.save(function () {});
       break;
