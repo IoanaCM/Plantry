@@ -1,7 +1,7 @@
 var mongoose 	= require("mongoose");
 
 pantrySchema = mongoose.Schema({
-    food: [collectionSchema]
+    food: [pairSchema]
 });
 
 module.exports = mongoose.model("Pantry", pantrySchema);

@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Food = require('../models/food');
-var Collection = require('../models/collection');
+const pair = require('../models/pair');
+var Pair = require('../models/pair');
 var Pantry = require('../models/pantry');
 var Shoppinglist = require('../models/shoppinglist');
 var User = require('../models/user');
@@ -9,21 +10,21 @@ var User = require('../models/user');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
-  console.log(req.cookies.user);
-  if (!req.cookies.user) {
-    res.redirect("/user/register");
-  }
+  // console.log(req.cookies.user);
+  // if (!req.cookies.user) {
+  //   res.redirect("/register");
+  // }
 
 
-  let user = await User.findOne({email: req.cookies.user});
-  console.log(user);
-  if (user) {
-    res.cookie("user", user.email, {maxAge: 360000});
-    res.render("user", {username: user.name});
-  }
+  // let user = await User.findOne({email: req.cookies.user});
+  // console.log(user);
+  // if (user) {
+    res.cookie("user", "jordanhall123@googlemail.com", {maxAge: 360000});
+    res.render("user", {username: "Jordan"});
+  // }
   
-  // res.render('userregister');
-
+  // res.redirect('userregister');
+  // res.redirect("/");
 });
 
 /* GET users login. */
@@ -51,7 +52,7 @@ router.post('/register', async function(req, res, next) {
   if (u) {
     console.log("found the user!!")
     res.cookie("user", u.email, {maxAge: 360000});
-    res.redirect("/user");
+    next();
   }
 
   console.log(username + " " + email)
@@ -75,8 +76,9 @@ router.post('/register', async function(req, res, next) {
 
                     console.log("Made new user");
                     console.log(u);
-                    res.cookie("user", u.email, {maxAge: 360000});
-                    res.redirect("/");
+                    req.cookies.user = u.email
+                    // req.cookie("user", u.email, {maxAge: 360000});
+                    next();
                   }
               });
             }
@@ -84,9 +86,8 @@ router.post('/register', async function(req, res, next) {
       }
   });
 
-  console.log("Redirecting");
-  res.render("userregister");
-
+  
+  next();
 
   // res.cookie(req.query.email, 'value', {maxAge: 36000s0});
 });
@@ -107,29 +108,78 @@ router.get('/list', async function(req, res, next) {
     foods = [];
   }
 
-  res.render('list', {pantry: food, foods:foods});
+  res.render('list', {list: food, foods:foods});
 });
 
 /* POST create food. */
-router.post('/pantry', function(req, res, next) {
-  console.log(req.body);
+router.post('/pantry', async function(req, res, next) {
+  let name = req.body.name;
+  let quantity = req.body.quantity;
+
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let food = await Food.findOne({name: name});
+
+  // let collection = await user.pantry.findOne({food: food});
+  let found = false;
+  console.log(user.pantry.food);
+  for (var pair of user.pantry.food) {
+    console.log("Pair " + pair);
+    if (pair.food.name == name) {
+      pair.quantity += parseInt(quantity);
+      pair.save(function () {});
+      user.pantry.save(function () {});
+      user.save(function () {});
+      found = true;
+      break;
+    } 
+  }
+  if (!found) {
+    // console.log("creating food with " + food + " " );
+    // Pair.create({food: food, quantity: quantity});
+    user.pantry.food.push(new Pair({food: food, quantity: quantity}));
+    console.log(user.pantry.food);
+    user.pantry.save(function () {});
+    user.save(function () {});
+  }
+  
   res.redirect('/user/pantry');
 });
 
 /* DELETE delete food. */
-router.delete('/pantry', function(req, res, next) {
-  res.render();
+router.post('/pantry/delete', async function(req, res, next) {
+  console.log(req.query);
+  let name = req.query.name;
+
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let food = await Food.findOne({name: name});
+
+  // let collection = await user.pantry.findOne({food: food});
+  let found = false;
+  console.log(user.pantry.food);
+  for (var pair in user.pantry.food) {
+    console.log("Pair " + pair);
+    if (user.pantry.food[pair].food.name == name) {
+      
+      user.pantry.food.splice(pair, 1);
+      user.pantry.save(function () {});
+      user.save(function () {});
+      break;
+    } 
+  }
+  
+  res.redirect('/user/pantry');
 });
 
 /* GET pantry listing. */
 router.get('/pantry', async function(req, res, next) {
 
-  let email = req.cookies.user;
+  // let email = req.cookies.user;
 
-  let user = await User.findOne({email: email});
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+
   let foods = await Food.find({});
   var food;
-  if (user === null) {
+  if (user == null) {
     food = [];
   } else {
     food = user.pantry.food;
@@ -138,11 +188,14 @@ router.get('/pantry', async function(req, res, next) {
     foods = [];
   }
 
+  // console.log(food);
+  // console.log(foods);
+
   res.render('pantry', {pantry: food, foods:foods});
 });
 
 /* POST create food. */
-router.post('/list/food', function(req, res, next) {
+router.post('/list', function(req, res, next) {
   res.render();
 });
 
@@ -152,8 +205,31 @@ router.put('/list/food', function(req, res, next) {
 });
 
 /* DELETE delete food. */
-router.delete('/list/food', function(req, res, next) {
-  res.render();
+router.post('/list/delete', async function(req, res, next) {
+  console.log(req.query);
+  let name = req.query.name;
+
+  let user = await User.findOne({email: "jordanhall123@googlemail.com"});
+  let food = await Food.findOne({name: name});
+
+  // let collection = await user.pantry.findOne({food: food});
+  let found = false;
+  console.log(user.shoppinglist);
+  for (var pair in user.shoppinglist) {
+    console.log("Pair " + pair);
+    if (pair[0].name == name) {
+      user.shoppinglist.splice(pair, 1);
+      user.shoppinglist.save(function () {});
+      user.save(function () {});
+      break;
+    } 
+  }
+  
+  res.redirect('/user/list');
+});
+
+router.post('list/getrecipes', async function(req, res, next) {
+  
 });
 
 

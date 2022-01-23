@@ -54,7 +54,7 @@ body {
 #logoGround,
 body {
     fill: #2f2504;
-    background-color: #2f2504;
+    background-color: #2f2504 !important;
 }
 
 #logoGround {
@@ -135,4 +135,9 @@ svg text {
     transform-origin: 50px 240px;
     animation-fill-mode: forwards;
     opacity: 0;
+}
+
+#app{
+    background-color: #A5AE9E !important;
+    padding: 50px;
 }

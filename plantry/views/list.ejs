@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Plantry</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
-  </head>
-  <body>
-    
-    
+<%- include('../partials/head.ejs'); %>
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #7E846B;">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Plantry</a>
@@ -78,6 +63,7 @@
       </form>
 
     <br>
+    <form action="/user/list/recipes? %>" method="post">
     <table class="table table-success table-striped">
     <thead>
         <tr>
@@ -85,19 +71,24 @@
           <th scope="col">Product</th>
           <th scope="col">Quantity</th>
           <th scope="col">Total carbon footprint (kg of CO2) </th>
+          <th scope="col">Remove?</th>
         </tr>
       </thead>
       <tbody>
-        <% for (i=0; i<pantry.length; i++)  { %>
+        <% for (i=0; i<list.length; i++)  { %>
         <tr>
+          <form action="/user/list/delete?name=<%= list[i].food.name %>" method="post">
           <th scope="row"><%= i+1%></th>
-          <td><%= pantry[i][0].name %></td>
-          <td><%= pantry[i][1] %></td>
-          <td><%= pantry[i][0].carbonFootprint * pantry[i][1]%></td>
+          <td><%= list[i][0].name %></td>
+          <td><%= list[i][1] %></td>
+          <td><%= list[i][0].carbonFootprint * pantry[i][1]%></td>
+          <td><button type="submit" class="btn btn-primary">remove.</button></td></form>
         </tr>
         <% } %>
       </tbody>
-    </table>  
+    </table>
+    <button type="submit" class="btn btn-primary">Get recipes</button> 
+  </form> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
   </body>

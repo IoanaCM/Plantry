@@ -1,3 +1,39 @@
+<% var loops = 11 %>
+
+<head><link href="https://rjb255.user.srcf.net/css/chromatic?HSL=0,36,14&number=<%=loops%>" rel="stylesheet" /></head>
+
+<div id=circleBox>
+<% for (var i = 0; i<loops; i++){ %>
+    <div class="circle flex chromatic-bg-<%=i%>">
+
+<% } %>
 <h1><%= message %></h1>
 <h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<div><%= error.stack %></div>
+
+<% for (var i = 0; i<loops; i++){ %>
+</div>
+
+
+<% } %>
+</div>
+<style>
+body{
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+#circleBox{
+    width: 2000px;
+    height: 2000px;
+
+}
+.circle.flex{
+    display: flex;
+    justify-content: center;
+    height:90%;
+    width:90%;
+}
+</style>

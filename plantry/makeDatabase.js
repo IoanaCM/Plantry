@@ -1,4 +1,10 @@
 var mongoose 		= require("mongoose");
+var Food 			= require("./models/food"),
+    Pair = require('./models/pair'),
+    Pantry 			= require("./models/pantry"),
+    Shoppinglist 			= require("./models/shoppinglist"),
+    User	= require("./models/user"),
+    Recipe 			= require("./models/recipe");
 
 const uri = "mongodb+srv://admin:Vj7uPoxy1gwxMMzO@cluster0.o9qgt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 mongoose.connect(
@@ -9,27 +15,6 @@ mongoose.connect(
 
 console.log(Food);
 
-var Food 			= require("./models/food"),
-    Pantry 			= require("./models/pantry"),
-    Shoppinglist 			= require("./models/shoppinglist"),
-    User	= require("./models/user"),
-    Recipe 			= require("./models/recipe");
-
-let apple = new Food({
-    name: "Apple", 
-    carbonFootprint: 1.5
-});
-let orange = new Food({
-    name: "Orange", 
-    carbonFootprint: 1.5
-});
-let pear = new Food({
-    name: "Pear", 
-    carbonFootprint: 1.5
-});
-
-Pantry.create({food: [
-    (await Food.findOne({name: "Apple"}), 3),
-    (await Food.findOne({name: "Apple"}), 5) 
-]})
-
+function createFood(name, co2) {
+    Food.create()
+}

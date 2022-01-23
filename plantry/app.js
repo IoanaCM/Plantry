@@ -37,7 +37,7 @@ mongoose.connect(
 console.log(Food);
 
 var Food 			= require("./models/food"),
-    Collection = require('./models/collection'),
+    Pair = require('./models/pair'),
     Pantry 			= require("./models/pantry"),
     Shoppinglist 			= require("./models/shoppinglist"),
     User	= require("./models/user"),
